@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <title>Highlight Checkout Rooms</title>
+</head>
+<body>
+  <h2>Highlight Checkout Rooms</h2>
+  <label>Date: <input type="date" id="dateInput"></label>
+  <button onclick="openRoomSelector('yellow')">Mark Yellow</button>
+<button onclick="openRoomSelector('green')">Mark Green</button>
+<button onclick="openRoomSelector('pink')">Mark Pink</button>
+
+
+  <br><br>
+  <textarea id="guestData" rows="10" cols="100" placeholder="Paste guest data here..."></textarea>
+  <br><br>
+  <button onclick="generatePDF()">Generate PDF</button>
+
+  <script>
+    const roomCoordinates = {
+  "101": { x: 149, y: 500 },
+  "102": { x: 149, y: 485 },
+  "103": { x: 149, y: 470 },
+  "104": { x: 149, y: 455 },
+  "105": { x: 149, y: 439 },
+  "106": { x: 149, y: 423 },
+  "107": { x: 149, y: 408 },
+  "108": { x: 149, y: 393 },
+  "109": { x: 149, y: 377 },
+  "110": { x: 149, y: 362 },
+  "111": { x: 149, y: 347 },
+  "112": { x: 149, y: 332 },
+  "114": { x: 149, y: 317 },
+  "116": { x: 149, y: 301 },
+  "117": { x: 149, y: 286 },
+  "118": { x: 149, y: 271 },
+  "119": { x: 149, y: 255 },
+  "120": { x: 149, y: 240 },
+  "121": { x: 149, y: 225 },
+  "122": { x: 149, y: 210 },
+  "123": { x: 149, y: 195 },
+  "124": { x: 149, y: 180 },
+
+  "201": { x: 246, y: 500 },
+  "202": { x: 246, y: 485 },
+  "203": { x: 246, y: 470 },
+  "204": { x: 246, y: 455 },
+  "205": { x: 246, y: 439 },
+  "206": { x: 246, y: 423 },
+  "207": { x: 246, y: 408 },
+  "208": { x: 246, y: 393 },
+  "209": { x: 246, y: 377 },
+  "210": { x: 246, y: 362 },
+  "211": { x: 246, y: 347 },
+  "212": { x: 246, y: 332 },
+  "214": { x: 246, y: 317 },
+  "216": { x: 246, y: 301 },
+  "217": { x: 246, y: 286 },
+  "218": { x: 246, y: 271 },
+  "219": { x: 246, y: 255 },
+  "220": { x: 246, y: 240 },
+  "221": { x: 246, y: 225 },
+  "222": { x: 246, y: 210 },
+  "223": { x: 246, y: 195 },
+  "224": { x: 246, y: 180 },
+
+  "301": { x: 337, y: 500 },
+  "302": { x: 337, y: 485 },
+  "303": { x: 337, y: 470 },
+  "304": { x: 337, y: 455 },
+  "305": { x: 337, y: 439 },
+  "306": { x: 337, y: 423 },
+  "307": { x: 337, y: 408 },
+  "308": { x: 337, y: 393 },
+  "309": { x: 337, y: 377 },
+  "310": { x: 337, y: 362 },
+  "311": { x: 337, y: 347 },
+  "312": { x: 337, y: 332 },
+  "314": { x: 337, y: 317 },
+  "316": { x: 337, y: 301 },
+  "317": { x: 337, y: 286 },
+  "318": { x: 337, y: 271 },
+  "319": { x: 337, y: 255 },
+  "320": { x: 337, y: 240 },
+  "321": { x: 337, y: 225 },
+  "322": { x: 337, y: 210 },
+
+  "401": { x: 432, y: 500 },
+  "402": { x: 432, y: 485 },
+  "403": { x: 432, y: 470 },
+  "404": { x: 432, y: 455 },
+  "405": { x: 432, y: 439 },
+  "406": { x: 432, y: 423 },
+  "407": { x: 432, y: 408 },
+  "408": { x: 432, y: 393 },
+  "409": { x: 432, y: 377 },
+  "410": { x: 432, y: 362 },
+  "411": { x: 432, y: 347 },
+  "412": { x: 432, y: 332 },
+  "414": { x: 432, y: 317 },
+  "416": { x: 432, y: 301 },
+  "417": { x: 432, y: 286 },
+  "418": { x: 432, y: 271 },
+  "419": { x: 432, y: 255 },
+  "420": { x: 432, y: 240 },
+  "421": { x: 432, y: 225 },
+  "422": { x: 432, y: 210 },
+
+  "501": { x: 526, y: 500 },
+  "502": { x: 526, y: 485 },
+  "503": { x: 526, y: 470 },
+  "504": { x: 526, y: 455 },
+  "505": { x: 526, y: 439 },
+  "506": { x: 526, y: 423 },
+  "507": { x: 526, y: 408 },
+  "508": { x: 526, y: 393 },
+  "509": { x: 526, y: 377 },
+  "510": { x: 526, y: 362 },
+  "511": { x: 526, y: 347 },
+  "512": { x: 526, y: 332 },
+  "514": { x: 526, y: 317 },
+  "516": { x: 526, y: 301 },
+  "517": { x: 526, y: 286 },
+  "518": { x: 526, y: 271 },
+  "519": { x: 526, y: 255 },
+  "520": { x: 526, y: 240 },
+  "521": { x: 526, y: 225 },
+  "522": { x: 526, y: 210 },
+
+  "601": { x: 624, y: 500 },
+  "602": { x: 624, y: 485 },
+  "603": { x: 624, y: 470 },
+  "604": { x: 624, y: 455 },
+  "605": { x: 624, y: 439 },
+  "606": { x: 624, y: 423 },
+  "607": { x: 624, y: 408 },
+  "608": { x: 624, y: 393 },
+  "609": { x: 624, y: 377 },
+  "610": { x: 624, y: 362 },
+  "611": { x: 624, y: 347 },
+  "612": { x: 624, y: 332 },
+  "614": { x: 624, y: 317 },
+  "616": { x: 624, y: 301 },
+  "617": { x: 624, y: 286 },
+  "618": { x: 624, y: 271 },
+  "619": { x: 624, y: 255 },
+  "620": { x: 624, y: 240 },
+
+  "701": { x: 719, y: 500 },
+  "702": { x: 719, y: 485 },
+  "703": { x: 719, y: 470 },
+  "704": { x: 719, y: 455 },
+  "705": { x: 719, y: 439 },
+  "706": { x: 719, y: 423 },
+  "707": { x: 719, y: 408 },
+  "708": { x: 719, y: 393 },
+  "709": { x: 719, y: 377 },
+  "710": { x: 719, y: 362 },
+  "711": { x: 719, y: 347 },
+  "712": { x: 719, y: 332 },
+  "714": { x: 719, y: 317 },
+  "716": { x: 719, y: 301 },
+  "717": { x: 719, y: 286 },
+  "718": { x: 719, y: 271 },
+  "719": { x: 719, y: 255 },
+  "720": { x: 719, y: 240 },
+
+  "801": { x: 814, y: 500 },
+  "802": { x: 814, y: 485 },
+  "803": { x: 814, y: 470 },
+  "804": { x: 814, y: 455 },
+  "805": { x: 814, y: 439 },
+  "806": { x: 814, y: 423 },
+  "807": { x: 814, y: 408 },
+  "808": { x: 814, y: 393 },
+  "809": { x: 814, y: 377 },
+  "810": { x: 814, y: 362 },
+  "811": { x: 814, y: 347 },
+  "812": { x: 814, y: 332 },
+  "814": { x: 814, y: 317 },
+  "816": { x: 814, y: 301 },
+  "817": { x: 814, y: 286 },
+  "818": { x: 814, y: 271 },
+  "819": { x: 814, y: 255 },
+  "820": { x: 814, y: 240 },  
+    };
+
+    const floorBoxSize = {
+      1: { width: 90, height: 15 },
+      2: { width: 95, height: 15 },
+      3: { width: 90, height: 15 },
+      4: { width: 90, height: 15 },
+      5: { width: 90, height: 15 },
+      6: { width: 94, height: 15 },
+      7: { width: 95, height: 15 },
+      8: { width: 95, height: 15 },
+    };
+
+    function parseDottedDate(dotted) {
+  const [dd, mm, yy] = dotted.split(".");
+  const date = new Date(`20${yy}-${mm}-${dd}`);
+  date.setHours(0, 0, 0, 0); // ⬅️ This is the fix!
+  return date;
+}
+
+let yellowRooms = new Set();
+let greenRooms = new Set();
+let pinkRooms = new Set();
+
+
+function openRoomSelector(color) {
+  const win = window.open("", "", "width=400,height=600");
+  win.document.write(`<h3>Select Rooms to Highlight ${color.toUpperCase()}</h3>`);
+  win.document.write(`<button onclick="window.opener.saveSelectedRooms('${color}', window)">Save</button><br><br>`);
+  
+  Object.keys(roomCoordinates).forEach(room => {
+    win.document.write(`
+      <label>
+        <input type="checkbox" id="chk_${room}" ${
+          (color === 'yellow' && yellowRooms.has(room)) || 
+          (color === 'green' && greenRooms.has(room)) ||
+          (color === 'pink' && pinkRooms.has(room)) ? 'checked' : ''
+        } />
+        ${room}
+      </label><br>
+    `);
+  });
+}
+
+function saveSelectedRooms(color, winRef) {
+  const selected = new Set();
+  Object.keys(roomCoordinates).forEach(room => {
+    const checkbox = winRef.document.getElementById(`chk_${room}`);
+    if (checkbox && checkbox.checked) {
+      selected.add(room);
+    }
+  });
+
+  if (color === 'yellow') {
+    yellowRooms = selected;
+  } else if (color === 'green') {
+    greenRooms = selected;
+  }else if (color === 'pink') {
+  pinkRooms = selected;
+}
+
+
+  winRef.close();
+}
+
+
+
+function highlightRoomsByCheckout(text, selectedDate, firstPage) {
+  const lines = text.trim().split("\n");
+  const header = lines[0].split("|");
+  const roomIndex = header.indexOf("ROOM");
+  const departureIndex = header.indexOf("DEPARTURE");
+
+  const selected = new Date(selectedDate);
+  selected.setHours(0, 0, 0, 0);
+
+let count = {
+  yellow: 0,
+  green: 0,
+  pink: 0,
+  blue: 0
+};
+const alreadyHandled = new Set();
+let roomsHighlighted = 0;
+
+
+  lines.slice(1).forEach(line => {
+    const fields = line.split("|");
+    const room = fields[roomIndex];
+    const departure = fields[departureIndex];
+
+    if (!room || !departure || !roomCoordinates[room]) return;
+
+    const depDate = parseDottedDate(departure);
+    const floor = Math.floor(parseInt(room) / 100);
+    const size = floorBoxSize[floor] || { width: 80, height: 15 };
+    const coords = roomCoordinates[room];
+
+    let color = null;
+
+    // Priority: green > yellow > pink > auto pink/blue
+if (greenRooms.has(room)) {
+  color = PDFLib.rgb(0.2, 0.7, 0.2);
+  count.green++;
+} else if (yellowRooms.has(room)) {
+  color = PDFLib.rgb(0.9, 0.9, 0.3);
+  count.yellow++;
+} else if (pinkRooms.has(room)) {
+  color = PDFLib.rgb(0.9, 0.4, 0.6);
+  count.pink++;
+} else {
+  const match = depDate.getTime() === selected.getTime();
+  const future = depDate > selected;
+
+  if (match) {
+    color = PDFLib.rgb(0.9, 0.4, 0.6); // soft pink
+    count.pink++;
+  } else if (future) {
+    color = PDFLib.rgb(0.3, 0.4, 0.9); // darker blue
+    count.blue++;
+  }
+}
+
+
+    if (color) {
+      firstPage.drawRectangle({
+        x: coords.x - size.height,
+        y: coords.y,
+        width: size.width,
+        height: size.height,
+        color,
+        opacity: 0.4,
+        rotate: PDFLib.degrees(180)
+      });
+      alreadyHandled.add(room);
+      roomsHighlighted++;
+    }
+  });
+
+  // 🔄 Handle green rooms that were not already drawn
+  greenRooms.forEach(room => {
+    if (!roomCoordinates[room] || alreadyHandled.has(room)) return;
+
+    const floor = Math.floor(parseInt(room) / 100);
+    const size = floorBoxSize[floor] || { width: 80, height: 15 };
+    const coords = roomCoordinates[room];
+
+    firstPage.drawRectangle({
+      x: coords.x - size.height,
+      y: coords.y,
+      width: size.width,
+      height: size.height,
+      color: PDFLib.rgb(0.2, 0.7, 0.2),
+      opacity: 0.4,
+      rotate: PDFLib.degrees(180)
+    });
+    alreadyHandled.add(room);
+    count.green++; 
+    roomsHighlighted++;
+  });
+
+  // 🔄 Handle pink rooms that were not already drawn
+  pinkRooms.forEach(room => {
+    if (!roomCoordinates[room] || alreadyHandled.has(room)) return;
+
+    const floor = Math.floor(parseInt(room) / 100);
+    const size = floorBoxSize[floor] || { width: 80, height: 15 };
+    const coords = roomCoordinates[room];
+
+    firstPage.drawRectangle({
+      x: coords.x - size.height,
+      y: coords.y,
+      width: size.width,
+      height: size.height,
+      color: PDFLib.rgb(0.9, 0.4, 0.6),
+      opacity: 0.4,
+      rotate: PDFLib.degrees(180)
+    });
+    alreadyHandled.add(room);
+    count.pink++; 
+    roomsHighlighted++;
+  });
+
+const summaryText = 
+  `Green: ${count.green}, Yellow: ${count.yellow}, Pink: ${count.pink}, Blue: ${count.blue}`;
+
+firstPage.drawText(summaryText, {
+  x: 600,
+  y: 214, // or y: 770 if you want it at the top
+  size: 8,
+  color: PDFLib.rgb(0, 0, 0),
+});
+
+
+  if (roomsHighlighted === 0) {
+    alert("No rooms were highlighted for the selected date.");
+  }
+}
+
+    async function generatePDF() {
+      const text = document.getElementById("guestData").value;
+      const dateInput = document.getElementById("dateInput").value;
+      if (!text || !dateInput) {
+        alert("Please input both date and guest data.");
+        return;
+      }
+
+      const existingPdfBytes = await fetch("roomlist.pdf").then(res => res.arrayBuffer());
+      const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+      const firstPage = pdfDoc.getPages()[0];
+
+      highlightRoomsByCheckout(text, dateInput, firstPage);
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+    }
+  </script>
+</body>
+</html>
